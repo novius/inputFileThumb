@@ -1,0 +1,45 @@
+body {
+	margin : 15px;
+    font-family: Arial,Helvetica,FreeSans,sans-serif;
+    font-size: 11px;
+}
+h1 {
+    -moz-border-radius: 15px 15px 15px 15px;
+    background: -moz-linear-gradient(center top , #0070D5 0%, #00549F 100%) repeat scroll 0 0 transparent;
+    color: #FFFFFF;
+    font-size: 22px;
+    padding: 3px 12px;
+}
+h2 {
+    -moz-border-radius: 15px 15px 15px 15px;
+    background: -moz-linear-gradient(center top , #F49039 0%, #D26624 100%) repeat scroll 0 0 transparent;
+    color: #FFFFFF;
+    font-size: 16px;
+    padding: 3px 12px;
+}
+h3 {
+    color: #454545;
+    font-size: 14px;
+}
+code {
+    font: 13px/1.5em Monaco,"Andale Mono","Lucida Console","Bitstream Vera Sans Mono","Courier New",monospace,serif;
+}
+pre {
+    -moz-border-radius: 10px 10px 10px 10px;
+    background-color: #EFF7FF;
+    border: 1px solid #0055A2;
+    color: #0055A2;
+    overflow: auto;
+    padding: 0 15px;
+}
+ul, ol {
+    margin: 0.75em 0 0.75em 32px;
+    padding: 0;
+}
+li {
+    list-style-image: url("puce_carre.gif");
+}
+a {
+    color: #474D4D;
+    text-decoration: underline;
+}
