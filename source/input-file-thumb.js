@@ -25,7 +25,7 @@
             'width'                 : 58, // Width in pixels of the thumbnail
             'height'                : 58, // Height in pixels of the thumbnail
             'description'           : 'More info about the file (appears in the details layer)',
-            'extensions'            : [], // Array of allowed extensions for the file
+            'extensions'            : [], // Array of allowed extensions for the file, in lowercased
             'deleteInput'           : false, // Give the name of a hidden input if you need one to catch the delete action
             'displayExtension'      : true, // Show the file extension (required or effective) in the thumbnail
             'orientation'           : '', // Orientation of the details layer. Leave blank for automatic detection (layer right of the thumbnail when possible). Set to 'rtl' to force the layer on the left.
@@ -199,7 +199,7 @@
                 if ($.isArray(found) && found.length) {
                     ext = RegExp.$1;
                 }
-                if (this.options.extensions.length && $.inArray(ext, this.options.extensions) == -1) {
+                if (this.options.extensions.length && $.inArray(ext.toLowerCase(), this.options.extensions) == -1) {
                     if ($.isFunction(this.options.cbCheckExt)) {
                         this.options.cbCheckExt(ext, this.options.extensions);
                     } else {
