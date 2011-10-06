@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2011 Novius Labs (Gilles FELIX & Antoine LEFEUVRE)
  *
- * version: 1.0.3 (30-JUN-2011)
+ * version: 1.0.4 (06-OCT-2011)
  * @requires jQuery v1.4.4 or later
  * @optional bgiframe plugin to deal with IE z-index issues
  *
