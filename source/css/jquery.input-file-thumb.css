@@ -124,14 +124,18 @@ Here is the native class image */
 }
 /* To set the colour for a specific extension, use the following selector:  .ui-inputfilethumb .ui-inputfilethumb-thumb span.on span.yourExtension */
 .ui-inputfilethumb .ui-inputfilethumb-thumb span.ui-inputfilethumb-extension-on span.gif {
+	color               : #FFF;
     background-color    : #107c40;
 }
 .ui-inputfilethumb .ui-inputfilethumb-thumb span.ui-inputfilethumb-extension-on span.jpg, .ui-inputfilethumb .ui-inputfilethumb-thumb span.on span.jpeg {
+	color               : #FFF;
     background-color    : #bb0706;
 }
 .ui-inputfilethumb .ui-inputfilethumb-thumb span.ui-inputfilethumb-extension-on span.png {
+	color               : #FFF;
     background-color    : #f09724;
 }
 .ui-inputfilethumb .ui-inputfilethumb-thumb span.ui-inputfilethumb-extension-on span.bmp {
+	color               : #FFF;
     background-color    : #f09724;
 }

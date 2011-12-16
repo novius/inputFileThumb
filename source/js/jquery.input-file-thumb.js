@@ -38,13 +38,14 @@
 		            'delete'         : 'Delete', // Label of the delete link
 		            'wrongExtension' : 'This extension is not allowed', // Message returned when an unsupported file type is selected. Unused when cbCheckExt is a function.
 		        },
-		        extensionsType          : { // Predefined metatypes of files with associated extensions
+		        'extensionsType'        : { // Predefined metatypes of files with associated extensions
 		            'image'   : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
 		        },
-	            'wrongExtension'        : null, // A callback function called when an unsupported file type is selected. This fonction must take two parameters: the wrong extension and the array of allowed extensions
-	            'visualize'             : null, // A callback function called when the user clicks on the thumbnail. The function's context is the link over the thumbnail.
-	            'delete'                : null, // A callback function called when the user clicks on the Delete file. The function's context is the instance of InputFileThumb object. The function must return true if you want to continue the delete process.
-	            'change'                : null // A callback function called when the input[type=file] change. The function's context is the instance of InputFileThumb object.
+	            'wrongExtension'        : null, // A callback function called when an unsupported file type is selected. This fonction must take two parameters: the event and a json (extension : the extension of the file, authorized : array of authorized extensions, message : the message for wrong extension defined in options)
+	            'visualize'             : null, // A callback function called when the user clicks on the thumbnail. This fonction must take two parameters: the event and a json (file : the url file)
+	            'delete'                : null, // A callback function called when the user clicks on the Delete file. This fonction must take one parameters: the event
+	            'changed'                : null // A callback function called when the input[type=file] change. This fonction must take one parameters: the event
+	            'choose'                : null // A callback function called when the not :file and add or edit button click. This fonction must take one parameters: the event
 	        });
 	    });
 	*/
@@ -82,7 +83,8 @@
 				}
 			},
 			delete : null,
-			change : null
+			changed : null,
+			choose : null
 		},
 
 		popupOpened : false,
@@ -92,9 +94,21 @@
 			var self = this,
 				o = self.options;
 
-			self.uiWidget = $('<span></span>')
-				.addClass('ui-widget ui-inputfilethumb')
-				.insertAfter(self.element);
+			if (self.element.is(':input')) {
+				if (self.element.is(':file')) {
+					self.uiInputFile = self.element;
+				} else {
+					self.element.hide();
+				}
+				self.uiWidget = $('<span></span>')
+					.insertAfter(self.element);
+
+				self.element.appendTo(self.uiWidget);
+			} else {
+				self.uiWidget = self.element;
+			}
+
+			self.uiWidget.addClass('ui-widget ui-inputfilethumb');
 
 			self._eventsHandlers();
 
@@ -144,7 +158,10 @@
 					icons: {
 						primary: "ui-icon-plusthick"
 					}
-				});
+				})
+				.click(function(e) {
+			        self.choose(e);
+			    });
 
 
 			self.uiEditFile = $('<span></span>')
@@ -154,9 +171,12 @@
 					icons: {
 						primary: "ui-icon-pencil"
 					}
-				});
+				})
+				.click(function(e) {
+			        self.choose(e);
+			    });
 
-			self.uiDeleteInput = $('<input type="hidden" name="' + o.deleteInput + '" value="" />')
+			self.uiDeleteInput = $('<input type="hidden" value="" />')
 				.appendTo(self.uiFileActions);
 
 			self.uiDeleteFile = $('<button type="button"></button>')
@@ -174,9 +194,13 @@
 
 		_init: function() {
 			var self = this,
-				o = self.options;
+				o = self.options,
+				file = o.file;
 
-			self.element.appendTo(self.uiWidget);
+			if (self.uiInputFile) {
+				self.uiInputFile.appendTo(self.uiWidget);
+				file = file || self.uiInputFile.val();
+			}
 
 			o.title = o.title || self.element.attr('title') || self.element.attr('name');
 
@@ -184,19 +208,21 @@
 			self.uiFileDescription.text(o.description);
 			self.uiAddFile.button('option', 'label', o.texts.add);
 			self.uiEditFile.button('option', 'label', o.texts.edit);
-			self.uiDeleteInput.attr('name', o.deleteInput);
+			self.uiDeleteInput.attr('name', o.deleteInput || '');
 			self.uiDeleteFile.button('option', 'label', o.texts.delete)
 				[o.deleteInput ? 'show' : 'hide']();
 
-			self.uiWidget[o.disabled ? 'addClass' : 'removeClass']('ui-state-disabled')
+			self.uiWidget[o.disabled ? 'addClass' : 'removeClass']('ui-state-disabled');
 
-			self._change(o.file || self.element.val());
+			self._change(file);
 		},
 
 		destroy: function() {
 			var self = this;
 
-			self.element.insertBefore(self.uiWidget);
+			if (self.element !== self.uiWidget) {
+				self.element.insertBefore(self.uiWidget);
+			}
 			self._eventsHandlers(true);
 			self.uiWidget.remove();
 
@@ -222,6 +248,44 @@
 			self._init();
 		},
 
+		_change : function(file) {
+			var self = this,
+				o = self.options,
+				ext = false;
+
+			if (file) {
+				ext = self._checkExtension(file);
+				if (ext === false) {
+					self.delete();
+					return;
+				}
+				if (self.uiInputFile) {
+					self.uiInputFile.appendTo(self.uiEditFile);
+				}
+				self.uiAddFile.hide();
+				self.uiEditFile.show();
+				if (o.deleteInput) {
+					self.uiDeleteInput.val('');
+					self.uiDeleteFile.show();
+				}
+
+			} else {
+				if (self.uiInputFile) {
+					self.uiInputFile.appendTo(self.uiAddFile);
+				}
+			    self.uiAddFile.show();
+			    self.uiEditFile.hide();
+			    if (o.deleteInput) {
+			        self.uiDeleteFile.hide();
+			    }
+			}
+			self.uiFileActions[o.disabled ? 'hide' : 'show']();
+
+			self._icon(ext, file);
+
+			return self;
+		},
+
 		_checkExtension : function(file) {
 			var self = this,
 				o = self.options,
@@ -241,42 +305,6 @@
 			}
 
 			return ext;
-		},
-
-		_change : function(file) {
-			var self = this,
-				o = self.options,
-				ext = false;
-
-			if (file) {
-				ext = self._checkExtension(file);
-				if (ext === false) {
-					self._empty();
-					return;
-				}
-				self.uiHover.css('cursor', 'default');
-				self.element.appendTo(self.uiEditFile);
-				self.uiAddFile.hide();
-				self.uiEditFile.show();
-				if (o.deleteInput) {
-					self.uiDeleteInput.val('');
-					self.uiDeleteFile.show();
-				}
-
-			} else {
-				self.element.appendTo(self.uiAddFile);
-			    self.uiHover.css('cursor', 'pointer');
-			    self.uiAddFile.show();
-			    self.uiEditFile.hide();
-			    if (o.deleteInput) {
-			        self.uiDeleteFile.hide();
-			    }
-			}
-			self.uiFileActions[o.disabled ? 'hide' : 'show']();
-
-			self._icon(ext, file);
-
-			return self;
 		},
 
 		_icon : function(ext, file) {
@@ -346,23 +374,23 @@
 					if (o.extensions.length > 0) {
 						ok = true;
 						$.each(o.extensions, function (i, val) {
-							if ($.inArray(val, extensionsType) == -1) {
+							if ($.inArray(val, extensionsType) === -1) {
 								ok = false;
-								return true;
+								return false;
 							}
-							return false;
+							return true;
 						});
 					}
 					if (ok) {
 						classes = type;
-						return true;
+						return false;
 					} else {
-						if ($.inArray(ext, extensionsType) != -1) {
+						if ($.inArray(ext, extensionsType) !== -1) {
 							classes = type;
-							return true;
+							return false;
 						}
 					}
-					return false;
+					return true;
 				});
 			}
 
@@ -371,9 +399,9 @@
 
 			if (o.displayExtension) {
 				if (ext !== false) {
-					div.append('<span class="' + ext + '">' + ext + '</span>');
+					div.append('<span class="ui-corner-all ' + ext + '">' + ext + '</span>');
 				} else if (o.extensions.length == 1) {
-					div.append('<span class="' + o.extensions[0] + '">' + o.extensions[0] + '</span>');
+					div.append('<span class="ui-corner-all ' + o.extensions[0] + '">' + o.extensions[0] + '</span>');
 				}
 			}
 
@@ -389,12 +417,14 @@
 			var self = this,
 				o = self.options;
 
-			var temp = $('<span></span>').insertAfter(self.element);
-			var form = $('<form></form>').appendTo('body');
-			self.element.appendTo(form);
-			form[0].reset();
-			self.element.insertAfter(temp);
-			temp.remove();
+			if (self.uiInputFile) {
+				var temp = $('<span></span>').insertAfter(self.uiInputFile);
+				var form = $('<form></form>').appendTo('body');
+				self.uiInputFile.appendTo(form);
+				form[0].reset();
+				self.uiInputFile.insertAfter(temp);
+				temp.remove();
+			}
 
 			return self._change('');
 		},
@@ -402,40 +432,51 @@
 		_eventsHandlers : function(unbind) {
 			unbind = unbind || false;
 
-			var self = this,
-				mouseenter = function() {
-					self.element.parent().addClass('ui-state-hover');
-				},
-				mouseleave = function() {
-					self.element.parent().removeClass('ui-state-hover');
-				},
-				change = function(e) {
-					self._change(self.element.val());
-					self.hide();
-					self._trigger('change');
-				},
-				click = function(e) {
-					if ($.browser.webkit && !self.popupOpened) {
-						self.popupOpened = setTimeout(function() {
-							$('body').one('mousemove', function() {
-								self.popupOpened = false;
-								self.hide();
-							});
-						}, 500);
-					}
-				};
+			var self = this;
 
-			self.element[unbind ? 'off' : 'on']({
-				mouseenter : mouseenter,
-				mouseleave : mouseleave,
-				change : change,
-				click : click
-			});
+			if (self.uiInputFile) {
+				var mouseenter = function() {
+						self.uiInputFile.parent().addClass('ui-state-hover');
+					},
+					mouseleave = function() {
+						self.uiInputFile.parent().removeClass('ui-state-hover');
+					},
+					change = function(e) {
+						self._change(self.uiInputFile.val())
+							.hide()
+							._trigger('changed');
+					},
+					click = function(e) {
+						if ($.browser.webkit && !self.popupOpened) {
+							self.popupOpened = setTimeout(function() {
+								$('body').one('mousemove', function() {
+									self.popupOpened = false;
+									self.hide();
+								});
+							}, 500);
+						}
+					};
+
+				self.uiInputFile[unbind ? 'off' : 'on']({
+					mouseenter : mouseenter,
+					mouseleave : mouseleave,
+					change : change,
+					click : click
+				});
+			}
 
 			return self;
 		},
 
-		// Called when the user clicks on the delete action
+		choose : function (event) {
+			var self = this,
+				o = self.options;
+
+			self._trigger('choose', event);
+
+			return self;
+		},
+
 		delete : function (event) {
 			var self = this,
 				o = self.options;
@@ -452,7 +493,6 @@
 				.hide();
 		},
 
-		// Called when the mouse is over the thumbnail to display the details layer
 		show : function () {
 			var self = this,
 				o = self.options;
@@ -515,7 +555,6 @@
 			return self;
 		},
 
-		// Called when the mouse leaves the details layer to hide it
 		hide : function () {
 			var self = this,
 				o = self.options;

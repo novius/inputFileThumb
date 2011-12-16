@@ -58,6 +58,59 @@ $(':file[name=existingimg]').inputFileThumb({
 </pre>
 <h3>Example</h3>
 <p style="margin-bottom: 20px;"><input type="file" name="existingimg" /></p>
+
+<h2>Example 4: Input hidden based</h2>
+<h3>Javascript</h3>
+<pre><code>
+$(':input[name=hiddenimg]').inputFileThumb({
+	'title'                 : 'Picture by ID',
+	'extensions'            : ['png','jpg','jpeg','gif'],
+	choose : function() {
+		var file = prompt('The file ?');
+		if (file) {
+			var self = $(this);
+			self.inputFileThumb('option', 'file', file);
+			if (self.inputFileThumb('option', 'file') === file) {
+				self.val(file);
+			}
+		}
+	}
+});
+</code>
+</pre>
+<h3>Example</h3>
+<p style="margin-bottom: 20px;"><input type="hidden" name="hiddenimg" /></p>
+
+<h2>Example 5: Not :input based</h2>
+<h3>Javascript</h3>
+<pre><code>
+$('#divimg').inputFileThumb({
+	'title'                 : 'Choisissez un document',
+	'extensions'            : ['pdf', 'doc', 'odt'],
+	'extensionsType'        : { // Predefined metatypes of files with associated extensions
+	      'document'   : ['pdf', 'doc', 'odt']
+    },
+	'texts'                 : {
+	   'add'            : 'Ajouter',
+	   'edit'           : 'Modifier',
+	   'delete'         : 'Supprimer',
+	   'wrongExtension' : 'Cette extension  n\'est pas autorisée'
+	},
+	choose : function() {
+		var file = prompt('The file ?');
+		if (file) {
+			var self = $(this);
+			self.inputFileThumb('option', 'file', file);
+			if (self.inputFileThumb('option', 'file') === file) {
+				alert(file);
+			}
+		}
+	}
+});
+</code>
+</pre>
+<h3>Example</h3>
+<p style="margin-bottom: 20px;"><div id="divimg"></div></p>
 </form>
 
 <script src="../lib/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -67,59 +120,60 @@ $(':file[name=existingimg]').inputFileThumb({
 <script type="text/javascript">
 $(document).ready(function() {
     $(':file[name=simple]').inputFileThumb({
-        //'file'                  : 'url', // URL of the existing file (the file which has been uploaded)
-        'title'                 : 'The file title', // The title of the file (appears in the details layer, the layer displayed when the mouse is over the thumbnail)
-        //'width'                 : 58, // Width in pixels of the thumbnail
-        //'height'                : 58, // Height in pixels of the thumbnail
-        'description'           : 'Here more info about the file'//,
-        //'extensions'            : [], // Array of allowed extensions for the file
-        //'deleteInput'           : false, // Give the name of a hidden input if you need one to catch the delete action
-        //'displayExtension'      : true, // Show the file extension (required or effective) in the thumbnail
-        //'orientation'           : '', // Orientation of the details layer. Leave blank for automatic detection (layer right of the thumbnail when possible). Set to 'rtl' to force the layer on the left.
-        //'classes'               : '', // You may create custom classes to change the thumbnail's default style. See CSS for further details.
-        //'addTitle'              : 'Add', // Label of the add link
-        //'editTitle'             : 'Edit', // Label of the edit link
-        //'delTitle'              : 'Delete', // Label of the delete link
-        //'wrongExtensionMessage' : 'This extension is not allowed', // Message returned when an unsupported file type is selected. Unused when cbCheckExt is a function.
-        //'cbCheckExt'            : false, // A callback function called when an unsupported file type is selected. This fonction must take two parameters: the wrong extension and the array of allowed extensions
-        //'cbVisualize'           : false // A callback function called when the user clicks on the thumbnail. The function's context is the link over the thumbnail.
+        'title'                 : 'The file title',
+        'description'           : 'Here more info about the file'
     });
     $(':file[name=pngonly]').inputFileThumb({
-        //'file'                  : 'url', // URL of the existing file (the file which has been uploaded)
-        'title'                 : 'PNG image', // The title of the file (appears in the details layer, the layer displayed when the mouse is over the thumbnail)
-        //'width'                 : 58, // Width in pixels of the thumbnail
-        //'height'                : 58, // Height in pixels of the thumbnail
+        'title'                 : 'PNG image',
         'description'           : 'Please select a PNG file',
-        'extensions'            : ['png']//, // Array of allowed extensions for the file
-        //'deleteInput'           : false, // Give the name of a hidden input if you need one to catch the delete action
-        //'displayExtension'      : true, // Show the file extension (required or effective) in the thumbnail
-        //'orientation'           : '', // Orientation of the details layer. Leave blank for automatic detection (layer right of the thumbnail when possible). Set to 'rtl' to force the layer on the left.
-        //'classes'               : '', // You may create custom classes to change the thumbnail's default style. See CSS for further details.
-        //'addTitle'              : 'Add', // Label of the add link
-        //'editTitle'             : 'Edit', // Label of the edit link
-        //'delTitle'              : 'Delete', // Label of the delete link
-        //'wrongExtensionMessage' : 'This extension is not allowed', // Message returned when an unsupported file type is selected. Unused when cbCheckExt is a function.
-        //'cbCheckExt'            : false, // A callback function called when an unsupported file type is selected. This fonction must take two parameters: the wrong extension and the array of allowed extensions
-        //'cbVisualize'           : false // A callback function called when the user clicks on the thumbnail. The function's context is the link over the thumbnail.
+        'extensions'            : ['png']
     });
     $(':file[name=existingimg]').inputFileThumb({
-        'file'                  : 'vignette.png', // URL of the existing file (the file which has been uploaded)
-        'title'                 : 'Picture', // The title of the file (appears in the details layer, the layer displayed when the mouse is over the thumbnail)
-        //'width'                 : 58, // Width in pixels of the thumbnail
-        //'height'                : 58, // Height in pixels of the thumbnail
+        'file'                  : 'vignette.png',
+        'title'                 : 'Picture',
         'description'           : 'Pick a nice shot!',
-        'extensions'            : ['png','jpg','jpeg','gif'], // Array of allowed extensions for the file
-        'deleteInput'           : 'delete_hidden'//, // Give the name of a hidden input if you need one to catch the delete action
-        //'displayExtension'      : true, // Show the file extension (required or effective) in the thumbnail
-        //'orientation'           : '', // Orientation of the details layer. Leave blank for automatic detection (layer right of the thumbnail when possible). Set to 'rtl' to force the layer on the left.
-        //'classes'               : '', // You may create custom classes to change the thumbnail's default style. See CSS for further details.
-        //'addTitle'              : 'Add', // Label of the add link
-        //'editTitle'             : 'Edit', // Label of the edit link
-        //'delTitle'              : 'Delete', // Label of the delete link
-        //'wrongExtensionMessage' : 'This extension is not allowed', // Message returned when an unsupported file type is selected. Unused when cbCheckExt is a function.
-        //'cbCheckExt'            : false, // A callback function called when an unsupported file type is selected. This fonction must take two parameters: the wrong extension and the array of allowed extensions
-        //'cbVisualize'           : false // A callback function called when the user clicks on the thumbnail. The function's context is the link over the thumbnail.
+        'extensions'            : ['png','jpg','jpeg','gif'],
+        'deleteInput'           : 'delete_hidden'
     });
+
+	$(':input[name=hiddenimg]').inputFileThumb({
+		'title'                 : 'Picture by ID',
+		'extensions'            : ['png','jpg','jpeg','gif'],
+		choose : function() {
+			var file = prompt('The file ?');
+			if (file) {
+				var self = $(this);
+				self.inputFileThumb('option', 'file', file);
+				if (self.inputFileThumb('option', 'file') === file) {
+					self.val(file);
+				}
+			}
+		}
+	});
+
+	$('#divimg').inputFileThumb({
+		'title'                 : 'Choisissez un document',
+		'extensions'            : ['pdf', 'doc', 'odt'],
+		'extensionsType'        : {
+		      'document'   : ['pdf', 'doc', 'odt']
+	    },
+		'texts'                 : {
+		   'add'            : 'Ajouter',
+		   'edit'           : 'Modifier',
+		   'delete'         : 'Supprimer',
+		   'wrongExtension' : 'Cette extension  n\'est pas autorisée'
+		},
+		choose : function() {
+			var file = prompt('The file ?');
+			if (file) {
+				var self = $(this);
+				self.inputFileThumb('option', 'file', file);
+				if (self.inputFileThumb('option', 'file') === file) {
+					alert(file);
+				}
+			}
+		}
+	});
 });
 </script>
 </div>

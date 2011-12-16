@@ -43,3 +43,8 @@ a {
     color: #474D4D;
     text-decoration: underline;
 }
+
+
+.ui-inputfilethumb .ui-inputfilethumb-thumb .document {
+    background-image    : url(document.png) !important;
+}
